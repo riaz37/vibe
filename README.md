@@ -1,8 +1,8 @@
-# Vibe 🚀
+# Zyro 🚀
 
 **Generate beautiful web applications instantly with AI prompts**
 
-Vibe is an AI-powered web application generator that transforms your ideas into fully functional, live web apps through simple text prompts. Built with Next.js 15, it leverages cutting-edge AI to create, preview, and share web applications in real-time.
+Zyro is an AI-powered web application generator that transforms your ideas into fully functional, live web apps through simple text prompts. Built with Next.js 15, it leverages cutting-edge AI to create, preview, and share web applications in real-time.
 
 ## ✨ Features
 
@@ -42,8 +42,8 @@ Vibe is an AI-powered web application generator that transforms your ideas into 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/vibe.git
-cd vibe
+git clone https://github.com/yourusername/zyro.git
+cd zyro
 ```
 
 2. Install dependencies:
@@ -89,7 +89,7 @@ Open [http://localhost:3000](http://localhost:3000) to see your app running!
 ## 📖 How It Works
 
 1. **Describe Your App**: Enter a natural language prompt describing the web application you want to create
-2. **AI Generation**: Vibe's AI analyzes your prompt and generates the complete application code
+2. **AI Generation**: Zyro's AI analyzes your prompt and generates the complete application code
 3. **Live Preview**: See your app running instantly in the integrated preview
 4. **Share & Collaborate**: Get a shareable URL to show your creation to others
 5. **Iterate**: Refine your prompts to modify and improve your generated apps
@@ -105,7 +105,7 @@ Open [http://localhost:3000](http://localhost:3000) to see your app running!
 ## 🏗️ Project Structure
 
 ```
-vibe/
+zyro/
 ├── src/
 │   ├── app/              # Next.js 15 app directory
 │   ├── components/       # Reusable UI components

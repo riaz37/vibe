@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vibe",
-  description: "Vibe -  AI Website Generator",
+  title: "Zyro",
+  description: "Zyro -  AI Website Generator",
   icons: {
     icon: "/logo.svg",
   }

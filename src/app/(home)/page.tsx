@@ -9,7 +9,7 @@ export default function Home() {
         <div className="flex flex-col items-center">
           <Image
             src="/logo.svg"
-            alt="Vibe"
+            alt="Zyro"
             width={50}
             height={50}
             className="hidden md:block"
@@ -17,7 +17,7 @@ export default function Home() {
         </div>
 
         <h1 className="text-2xl md:text-5xl font-bold text-center">
-          Build something with Vibe
+          Build something with Zyro
         </h1>
 
         <p className="text-lg md:text-xl text-muted-foreground text-center">
