@@ -7,6 +7,7 @@ import { z } from "zod";
 import { inngest } from "./client";
 import { getSandbox } from "./utils";
 import { SANDBOX_TIMEOUT } from "./types";
+import { debugSandbox, fixSandboxIssues } from "./debug";
 
 interface AgentState {
     summary: string;
@@ -18,7 +19,7 @@ export const codeAgentFunction = inngest.createFunction(
     { event: "code-agent/run" },
     async ({ event, step }) => {
         const sandboxId = await step.run("get-sandbox", async () => {
-            const sandbox = await Sandbox.create("zyro-nextjs-riaz37");
+            const sandbox = await Sandbox.create("zyro-nextjs-riaz302001");
             await sandbox.setTimeout(SANDBOX_TIMEOUT);
             return sandbox.sandboxId;
         });
@@ -151,6 +152,36 @@ export const codeAgentFunction = inngest.createFunction(
                             }
                         })
                     }
+                }),
+                createTool({
+                    name: "restartNextServer",
+                    description: "Restart the Next.js development server in the sandbox",
+                    parameters: z.object({}),
+                    handler: async ({}, { step }) => {
+                        return await step?.run("restartNextServer", async () => {
+                            try {
+                                const fixed = await fixSandboxIssues(sandboxId);
+                                return fixed ? "Next.js server restarted successfully" : "Failed to restart Next.js server";
+                            } catch (error) {
+                                return "Error restarting server: " + error
+                            }
+                        })
+                    }
+                }),
+                createTool({
+                    name: "checkSandboxHealth",
+                    description: "Check the health and status of the sandbox environment",
+                    parameters: z.object({}),
+                    handler: async ({}, { step }) => {
+                        return await step?.run("checkSandboxHealth", async () => {
+                            try {
+                                const debugInfo = await debugSandbox(sandboxId);
+                                return JSON.stringify(debugInfo, null, 2);
+                            } catch (error) {
+                                return "Error checking sandbox health: " + error
+                            }
+                        })
+                    }
                 })
             ],
             lifecycle: {
@@ -250,9 +281,69 @@ export const codeAgentFunction = inngest.createFunction(
             Object.keys(result.state.data.files).length === 0
 
         const sandboxUrl = await step.run("get-sandbox-url", async () => {
-            const sandbox = await getSandbox(sandboxId);
-            const host = sandbox.getHost(3000);
-            return `http://${host}`;
+            try {
+                const sandbox = await getSandbox(sandboxId);
+
+                // Check if Next.js server is running by testing the port
+                const checkServerResult = await sandbox.commands.run("curl -s -o /dev/null -w '%{http_code}' http://localhost:3000", {
+                    timeoutMs: 5000
+                });
+
+                console.log(`Server check result: ${checkServerResult.stdout}`);
+
+                // If server is not responding (not 200), try to start it
+                if (checkServerResult.stdout.trim() !== "200") {
+                    console.log("Next.js server not responding, attempting to start...");
+
+                    // Kill any existing Next.js processes
+                    await sandbox.commands.run("pkill -f 'next dev' || true");
+                    await sandbox.commands.run("pkill -f 'node.*next' || true");
+
+                    // Wait a moment for processes to terminate
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Start Next.js server in background
+                    await sandbox.commands.run("cd /home/user && nohup npm run dev > /tmp/nextjs.log 2>&1 &");
+
+                    // Wait for server to start and check again
+                    let attempts = 0;
+                    const maxAttempts = 30; // 30 seconds max
+
+                    while (attempts < maxAttempts) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+
+                        const serverCheck = await sandbox.commands.run("curl -s -o /dev/null -w '%{http_code}' http://localhost:3000", {
+                            timeoutMs: 3000
+                        });
+
+                        if (serverCheck.stdout.trim() === "200") {
+                            console.log(`Server started successfully after ${attempts + 1} attempts`);
+                            break;
+                        }
+
+                        attempts++;
+
+                        if (attempts === maxAttempts) {
+                            // Use debug utility to get comprehensive info
+                            console.error(`Failed to start Next.js server after ${maxAttempts} attempts. Running diagnostics...`);
+                            await debugSandbox(sandboxId);
+
+                            // Try to fix the issues
+                            const fixed = await fixSandboxIssues(sandboxId);
+                            if (!fixed) {
+                                throw new Error("Unable to start Next.js server in sandbox");
+                            }
+                        }
+                    }
+                }
+
+                const host = sandbox.getHost(3000);
+                return `http://${host}`;
+            } catch (error) {
+                console.error("Error getting sandbox URL:", error);
+                // Return a fallback URL or re-throw based on your needs
+                throw error;
+            }
         });
 
         await step.run("save-result", async () => {

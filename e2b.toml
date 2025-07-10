@@ -1,0 +1,17 @@
+# This is a config for E2B sandbox template.
+# You can use template ID (o7bbko9uoov3q0dffhox) or template name (zyro-nextjs-riaz-v2) to create a sandbox:
+
+# Python SDK
+# from e2b import Sandbox, AsyncSandbox
+# sandbox = Sandbox("zyro-nextjs-riaz-v2") # Sync sandbox
+# sandbox = await AsyncSandbox.create("zyro-nextjs-riaz-v2") # Async sandbox
+
+# JS SDK
+# import { Sandbox } from 'e2b'
+# const sandbox = await Sandbox.create('zyro-nextjs-riaz-v2')
+
+team_id = "44da2f19-6eda-4c99-8284-d361e170f873"
+start_cmd = "/compile_page.sh"
+dockerfile = "sandbox-template/nextjs/e2b.Dockerfile"
+template_name = "zyro-nextjs-riaz-v2"
+template_id = "o7bbko9uoov3q0dffhox"

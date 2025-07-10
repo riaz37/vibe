@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # This script runs during building the sandbox template
