@@ -294,15 +294,8 @@ export const codeAgentFunction = inngest.createFunction(
                         attempts++;
 
                         if (attempts === maxAttempts) {
-                            // Use debug utility to get comprehensive info
-                            console.error(`Failed to start Next.js server after ${maxAttempts} attempts. Running diagnostics...`);
-                            await debugSandbox(sandboxId);
-
-                            // Try to fix the issues
-                            const fixed = await fixSandboxIssues(sandboxId);
-                            if (!fixed) {
-                                throw new Error("Unable to start Next.js server in sandbox");
-                            }
+                            console.error(`Failed to start Next.js server after ${maxAttempts} attempts.`);
+                            throw new Error("Unable to start Next.js server in sandbox");
                         }
                     }
                 }
