@@ -7,7 +7,6 @@ import { z } from "zod";
 import { inngest } from "./client";
 import { getSandbox } from "./utils";
 import { SANDBOX_TIMEOUT } from "./types";
-import { debugSandbox, fixSandboxIssues } from "./debug";
 
 interface AgentState {
     summary: string;
@@ -153,36 +152,7 @@ export const codeAgentFunction = inngest.createFunction(
                         })
                     }
                 }),
-                createTool({
-                    name: "restartNextServer",
-                    description: "Restart the Next.js development server in the sandbox",
-                    parameters: z.object({}),
-                    handler: async ({}, { step }) => {
-                        return await step?.run("restartNextServer", async () => {
-                            try {
-                                const fixed = await fixSandboxIssues(sandboxId);
-                                return fixed ? "Next.js server restarted successfully" : "Failed to restart Next.js server";
-                            } catch (error) {
-                                return "Error restarting server: " + error
-                            }
-                        })
-                    }
-                }),
-                createTool({
-                    name: "checkSandboxHealth",
-                    description: "Check the health and status of the sandbox environment",
-                    parameters: z.object({}),
-                    handler: async ({}, { step }) => {
-                        return await step?.run("checkSandboxHealth", async () => {
-                            try {
-                                const debugInfo = await debugSandbox(sandboxId);
-                                return JSON.stringify(debugInfo, null, 2);
-                            } catch (error) {
-                                return "Error checking sandbox health: " + error
-                            }
-                        })
-                    }
-                })
+
             ],
             lifecycle: {
                 onResponse: async ({ result, network }) => {
