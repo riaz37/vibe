@@ -1,17 +1,16 @@
 # This is a config for E2B sandbox template.
-# You can use template ID (ppnq7s6sftgs3a69a33o) or template name (vibe-nextjs-ajay-test) to create a sandbox:
+# You can use template ID (um8lezi8mpyxtczewk7g) or template name (zyro-nextjs-riaz37) to create a sandbox:
 
 # Python SDK
 # from e2b import Sandbox, AsyncSandbox
-# sandbox = Sandbox("vibe-nextjs-ajay-test") # Sync sandbox
-# sandbox = await AsyncSandbox.create("vibe-nextjs-ajay-test") # Async sandbox
+# sandbox = Sandbox("zyro-nextjs-riaz37") # Sync sandbox
+# sandbox = await AsyncSandbox.create("zyro-nextjs-riaz37") # Async sandbox
 
 # JS SDK
 # import { Sandbox } from 'e2b'
-# const sandbox = await Sandbox.create('vibe-nextjs-ajay-test')
+# const sandbox = await Sandbox.create('zyro-nextjs-riaz37')
 
-team_id = "163ba2ad-32c8-477b-8954-141a8c2ce8d4"
-start_cmd = "/compile_page.sh"
+team_id = "44da2f19-6eda-4c99-8284-d361e170f873"
 dockerfile = "e2b.Dockerfile"
-template_name = "vibe-nextjs-ajay-test"
-template_id = "ppnq7s6sftgs3a69a33o"
+template_name = "zyro-nextjs-riaz37"
+template_id = "um8lezi8mpyxtczewk7g"

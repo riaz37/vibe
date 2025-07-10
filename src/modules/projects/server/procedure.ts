@@ -39,43 +39,58 @@ export const projectRoute = createTRPCRouter({
         )
         .mutation(async ({ input, ctx }) => {
             try {
+                console.log("Starting project creation for user:", ctx.auth.userId);
+
+                console.log("Consuming credits...");
                 await consumeCredits();
+                console.log("Credits consumed successfully");
+
+                console.log("Creating project in database...");
+                const createProject = await prisma.project.create({
+                    data: {
+                        userId: ctx.auth.userId,
+                        name: generateSlug(2, {
+                            format: "kebab",
+                        }),
+                        messages: {
+                            create: {
+                                content: input.value,
+                                role: "USER",
+                                type: "RESULT",
+                            }
+                        }
+                    }
+                })
+                console.log("Project created successfully:", createProject.id);
+
+                console.log("Sending Inngest event...");
+                await inngest.send({
+                    name: "code-agent/run",
+                    data: {
+                        value: input.value,
+                        projectId: createProject.id
+                    },
+                })
+                console.log("Inngest event sent successfully");
+
+                return createProject;
             } catch (error) {
-                if (error instanceof Error) {
+                console.error("Error in project creation:", error);
+
+                if (error instanceof Error && error.message.includes("credit")) {
                     throw new TRPCError({ code: "UNAUTHORIZED", message: error.message })
-                } else {
+                }
+
+                if (error instanceof Error && error.message.includes("limit")) {
                     throw new TRPCError({
                         code: "TOO_MANY_REQUESTS",
                         message: "You have reached your request limit"
                     })
                 }
+
+                // Re-throw the original error for debugging
+                throw error;
             }
-
-            const createProject = await prisma.project.create({
-                data: {
-                    userId: ctx.auth.userId,
-                    name: generateSlug(2, {
-                        format: "kebab",
-                    }),
-                    messages: {
-                        create: {
-                            content: input.value,
-                            role: "USER",
-                            type: "RESULT",
-                        }
-                    }
-                }
-            })
-
-            await inngest.send({
-                name: "code-agent/run",
-                data: {
-                    value: input.value,
-                    projectId: createProject.id
-                },
-            })
-
-            return createProject;
         }),
 
     getMany: protectedProcedure
