@@ -38,6 +38,11 @@ export function MessagesContainer({
         ) {
             setActiveFragment(lastAssistantMessage.Fragment)
             lastAssistantMessageRef.current = lastAssistantMessage.id
+
+            // Automatically open the project link in a new tab when project is completed
+            if (lastAssistantMessage.Fragment.sandboxUrl) {
+                window.open(lastAssistantMessage.Fragment.sandboxUrl, "_blank");
+            }
         }
     }, [messages, setActiveFragment])
 
